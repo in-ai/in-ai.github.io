@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+<head>
+<style>
+.flex{
+    display: flex;
+}
+.flex div{
+    padding:10px;
+}
+td {
+    padding:5px;
+}
+th{
+    padding:10px 5px;
+	background:yellow;
+}
+th input,td input,td select{
+    font-size:17px;
+}
+table {
+    border-collapse:collapse;
+}
+</style>
+</head>
+<body>
+<div class="flex">
+<div style="">
+加護<br>
+<label><input type="radio" name="kago" value="150" checked>神石</label><br>
+<label><input type="radio" name="kago" value="140">マグナ</label><br>
+<label><input type="radio" name="kago" value="0">なし</label>
+</div>
+<div>
+両/方<br>
+<label><input type="radio" name="sapo" value="2" checked>両面</label><br>
+<label><input type="radio" name="sapo" value="1">片面</label>
+</div>
+<div>
+六竜石<br>
+<label><input type="radio" name="roku" value="40" checked>4凸</label><br>
+<label><input type="radio" name="roku" value="10">無凸</label><br>
+<label><input type="radio" name="roku" value="0">なし</label>
+</div>
+<div>
+キャラ加護<br>
+<label><input type="radio" name="mika" value="0" checked>なし</label><br>
+<label><input type="radio" name="mika" value="20">あり(ミカエル)</label>
+</div>
+<div>
+加護量<br>
+神　石：<input type="text" id="kami" style="width:3em;" readonly>%<br>
+マグナ：<input type="text" id="magu" style="width:3em;" readonly>%
+</div>
+</div>
+<hr>
+<table>
+<tr name='row'>
+<td>
+<select name="row_weapon">
+	<option value="0">--武器スキル--</option>
+	<option value="3">技巧(小)SL15</option>
+	<option value="6.5">技巧(中)SL15</option>
+	<option value="7.5">技巧(中)SL20</option>
+	<option value="10">技巧(大)SL15</option>
+	<option value="11">技巧(大)SL20</option>
+	<option value="12">技巧II/刹那IISL15</option>
+	<option value="20">水禍の技巧(特大)SL15</option>
+	<option value="30">セフィラSL15※アーカルム限定</option>
+</select>
+<td>
+<select name="row_type">
+    <option value="-1">--加護--</option>
+    <option value="0">神　石</option>
+    <option value="1">マグナ</option>
+    <option value="2">固　定</option>
+</select>
+<td>
+<input type="text" name="row_crit" style="width:4em;" value="0" readonly>%
+<tr>
+<th>
+<th>合計
+<th>
+<input type="text" id="total_crit" style="width:4em;" value="0" readonly>%
+</table>
+<script>
+function calc(){
+	var kago = +getRadioValue('kago');
+	var sapo = +getRadioValue('sapo');
+	var roku = +getRadioValue('roku');
+	var mika = +getRadioValue('mika'); 
+	var kami = kago==150 ? kago * sapo + roku + mika : roku + mika ;
+	var magu = kago==140 ? kago * sapo + mika : mika ;
+	document.getElementById('kami').value = kami;
+	document.getElementById('magu').value = magu;
+	var weapon = document.getElementsByName('row_weapon');
+	var type = document.getElementsByName('row_type');
+	var crit = document.getElementsByName('row_crit');
+        var total_crit = 0;
+	for(let i=0;i<weapon.length;i++){
+		crit[i].value = type[i].value == 0 ? weapon[i].value * ( kami + 100 ) / 100 :
+				type[i].value == 1 ? weapon[i].value * ( magu + 100 ) / 100 :
+				type[i].value == 2 ? weapon[i].value : 0 ;
+		total_crit = total_crit + (+crit[i].value) ;
+	}
+	document.getElementById('total_crit').value = total_crit;
+}
+function getRadioValue(name){
+	return Array.from(document.getElementsByName(name)).find(ele => ele.checked).value;
+}
+var rowElement = document.getElementsByName('row')[0];
+rowElement.after(rowElement.cloneNode(true));
+rowElement.after(rowElement.cloneNode(true));
+rowElement.after(rowElement.cloneNode(true));
+rowElement.after(rowElement.cloneNode(true));
+rowElement.after(rowElement.cloneNode(true));
+var radioElements = document.querySelectorAll('input[type="radio"],select');
+for (let target of radioElements) {
+	target.addEventListener('change', () => {
+		calc();
+	});
+}
+calc();
+</script>
+</body>
+</html>
